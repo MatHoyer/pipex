@@ -3,62 +3,112 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 13:27:14 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/28 15:24:21 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/28 21:15:53 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	exec(t_pipex *pip, int fd_pipe[2], int state)
+void	dup_cmp(t_pipex *pip)
 {
-	int	fd;
-	
-	if (state == 0)
+	int		i;
+	int		j;
+	char	*tmp;
+
+	i = ft_strlen(pip->cmd->split[0]);
+	j = 0;
+	while (pip->cmd->split[0][i] != '/')
+		i--;
+	tmp = malloc(ft_strlen(pip->cmd->split[0]) - i);
+	i++;
+	while (pip->cmd->split[0][i])
 	{
-		fd = open(pip->infile, O_RDONLY);
-		dup2(fd, 0);
-		dup2(fd_pipe[1], 1);
-		close(fd_pipe[0]);
+		tmp[j] = pip->cmd->split[0][i];
+		j++;
+		i++;
 	}
-	else
+	tmp[j] = '\0';
+	free(pip->cmd->split[0]);
+	pip->cmd->split[0] = tmp;
+}
+
+char	*get_cmd(t_pipex *pip)
+{
+	char	*a_return;
+	int		i;
+
+	i = -1;
+	if (pip->cmd->split[0][0] == '/')
 	{
-		fd = open(pip->outfile, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-		dup2(fd, 1);
-		dup2(fd_pipe[0], 0);
-		close(fd_pipe[1]);
+		if (access(pip->cmd->split[0], F_OK | X_OK) == -1)
+			free_all(pip, "Error : Cmd not found");
+		a_return = ft_strdup(pip->cmd->split[0]);
+		dup_cmp(pip);
+		return (a_return);
+	}
+	while (pip->all_path && pip->all_path[++i])
+	{
+		a_return = ft_strjoin(pip->all_path[i], pip->cmd->split[0]);
+		if (access(a_return, F_OK | X_OK) != -1)
+			return (a_return);
+		free(a_return);
+	}
+	return (NULL);
+}
+
+void	first(t_pipex *pip, int fd_pipe[2], int infile)
+{
+	dup2(fd_pipe[1], 1);
+	close(fd_pipe[0]);
+	dup2(infile, 0);
+	pip->cmd->split = ft_split(pip->cmd->content, ' ');
+	pip->cmd->path = get_cmd(pip);
+	if (pip->cmd->path == NULL)
+	{
+		free_all(pip, "Error : Cmd not found");
 	}
 	execve(pip->cmd->path, pip->cmd->split, NULL);
 }
 
-void	pipex(t_pipex *pip, char **env)
+void	last(t_pipex *pip, int fd_pipe[2], int outfile)
 {
-	pid_t	pid;
-	int		i;
-	int		fd_pipe[2];
-	char	**commande;
-
-	i = 0;
-	while (pip->cmd)
+	dup2(fd_pipe[0], 0);
+	close(fd_pipe[1]);
+	dup2(outfile, 1);
+	pip->cmd->split = ft_split(pip->cmd->content, ' ');
+	pip->cmd->path = get_cmd(pip);
+	if (pip->cmd->path == NULL)
 	{
-		pipe(fd_pipe);
-		pid = fork();
-		if (pid == -1)
-			free_all(pip, "Error : Bad fork");
-		if (pid == 0)
-		{
-			commande = get_path(env);
-			if (commande == NULL || get_cmd(pip->cmd, commande))
-			{
-				free_mat(commande);
-				free_all(pip, "Error : Cmd not found");
-			}
-			free_mat(commande);
-			exec(pip, fd_pipe, i);
-		}
-		i = 1;
-		pip->cmd = pip->cmd->next;
+		free_all(pip, "Error : Cmd not found");
 	}
+	execve(pip->cmd->path, pip->cmd->split, NULL);
+}
+
+void	pipex(t_pipex *pip)
+{
+	pid_t	pid1;
+	pid_t	pid2;
+	int		fd_infile;
+	int		fd_outfile;
+	int		fd_pipe[2];
+
+	pipe(fd_pipe);
+	fd_infile = open(pip->infile, O_RDONLY);
+	fd_outfile = open(pip->outfile, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+	pid1 = fork();
+	if (pid1 == 0)
+		first(pip, fd_pipe, fd_infile);
+	pip->cmd = pip->cmd->next;
+	pid2 = fork();
+	if (pid2 == 0)
+		last(pip, fd_pipe, fd_outfile);
+	close(fd_pipe[0]);
+	close(fd_pipe[1]);
+	waitpid(pid1, NULL, 0);
+	waitpid(pid2, NULL, 0);
+	close(fd_infile);
+	close(fd_outfile);
 }

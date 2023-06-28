@@ -3,26 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 13:18:08 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/28 14:12:45 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/28 20:13:56 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-void	wait_all(t_pipex *pip)
-{
-	int	i;
-
-	i = 0;
-	while(i < pip->nb_cmd)
-	{
-		wait(NULL);
-		i++;
-	}
-}
 
 int main(int ac, char **av, char **env)
 {
@@ -35,11 +23,11 @@ int main(int ac, char **av, char **env)
 	pipex_mem.infile = av[1];
 	pipex_mem.outfile = av[ac - 1];
 	pipex_mem.nb_cmd = ac - 3;
+	pipex_mem.all_path = get_path(env);
 	i = -1;
 	while (++i < pipex_mem.nb_cmd)
 		ft_lstadd_back(&pipex_mem.cmd, ft_lstnew(av[i + 2]));
-	pipex(&pipex_mem, env);
-	wait_all(&pipex_mem);
+	pipex(&pipex_mem);
 	free_all(&pipex_mem, "");
 	return (0);
 }

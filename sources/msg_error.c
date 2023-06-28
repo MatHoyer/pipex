@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   msg_error.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 13:22:59 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/28 13:23:44 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/28 20:28:59 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,5 +15,6 @@
 int	msg_error(char *str)
 {
 	ft_putstr_fd(str, 2);
+	ft_putstr_fd(".\n", 2);
 	return (1);
 }
