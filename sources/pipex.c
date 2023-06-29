@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 13:27:14 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 13:29:51 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/29 21:48:52 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	last_open(t_pipex *pip, int fd_pipe[2])
 	int	outfile;
 
 	if (pip->if_here_doc)
-		outfile = open(pip->outfile, O_WRONLY | O_APPEND);
+		outfile = open(pip->outfile, O_WRONLY | O_APPEND | O_CREAT, 0644);
 	else
 		outfile = open(pip->outfile, O_WRONLY | O_TRUNC | O_CREAT, 0644);
 	if (outfile == -1)
@@ -64,8 +64,8 @@ void	last(t_pipex *pip, int fd_pipe[2])
 
 	outfile = last_open(pip, fd_pipe);
 	dup2(fd_pipe[0], 0);
-	close(fd_pipe[1]);
 	close(fd_pipe[0]);
+	close(fd_pipe[1]);
 	dup2(outfile, 1);
 	close(outfile);
 	if (!pip->cmd->content || pip->cmd->content[0] == '\0')
@@ -84,11 +84,11 @@ void	last(t_pipex *pip, int fd_pipe[2])
 void	one_more(t_pipex *pip, int fd_prec[2], int fd_pipe[2])
 {
 	dup2(fd_prec[0], 0);
-	close(fd_prec[1]);
 	dup2(fd_pipe[1], 1);
 	close(fd_pipe[0]);
-	close(fd_prec[0]);
 	close(fd_pipe[1]);
+	close(fd_prec[0]);
+	close(fd_prec[1]);
 	if (!pip->cmd->content || pip->cmd->content[0] == '\0')
 		free_all(pip, "Error : Cmd not found");
 	pip->cmd->split = ft_split(pip->cmd->content, ' ');
@@ -102,13 +102,21 @@ void	one_more(t_pipex *pip, int fd_prec[2], int fd_pipe[2])
 	execve(pip->cmd->path, pip->cmd->split, NULL);
 }
 
+void	do_one_more(t_pipex *pip, int i)
+{
+	pipe(pip->fd_pipe[i]);
+	pip->pid[i] = fork();
+	if (pip->pid[i] == 0)
+		one_more(pip, pip->fd_pipe[i - 1], pip->fd_pipe[i]);
+	close(pip->fd_pipe[i - 1][0]);
+	close(pip->fd_pipe[i][1]);
+}
+
 void	pipex(t_pipex *pip)
 {
 	int	i;
-	int	j;
 
 	i = -1;
-	pip->first_cmd = pip->cmd;
 	while (++i < pip->nb_cmd)
 	{
 		if (i == 0)
@@ -124,23 +132,11 @@ void	pipex(t_pipex *pip)
 			pip->pid[i] = fork();
 			if (pip->pid[i] == 0)
 				last(pip, pip->fd_pipe[i - 1]);
+			close(pip->fd_pipe[i - 1][0]);
 		}
 		else
-		{
-			pipe(pip->fd_pipe[i]);
-			pip->pid[i] = fork();
-			if (pip->pid[i] == 0)
-				one_more(pip, pip->fd_pipe[i - 1], pip->fd_pipe[i]);
-			close(pip->fd_pipe[i - 1][0]);
-			close(pip->fd_pipe[i][1]);
-		}
+			do_one_more(pip, i);
 		pip->cmd = pip->cmd->next;
-	}
-	j = -1;
-	while (++j < pip->nb_cmd - 1)
-	{
-		close(pip->fd_pipe[j][0]);
-		close(pip->fd_pipe[j][1]);
 	}
 	wait_all(pip);
 }

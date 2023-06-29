@@ -1,9 +1,3 @@
-yg$
-youloug$
-goy$
-yog$
-yolog$
-goy$
 Makefile
 infile
 libft
@@ -16,6 +10,7 @@ Makefile
 infile
 libft
 obj
+out
 outfile
 pipex
 pipex.h
@@ -24,6 +19,16 @@ Makefile
 infile
 libft
 obj
+out
+outfile
+pipex
+pipex.h
+sources
+Makefile
+infile
+libft
+obj
+out
 outfile
 pipex
 pipex.h
