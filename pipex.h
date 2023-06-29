@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/08 10:51:12 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 10:20:04 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/29 10:22:26 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ typedef struct pipex
 {
 	t_list	*cmd;
 	t_list	*first_cmd;
+	int		**fd_pipe;
+	pid_t	*pid;
 	char	**all_path;
 	char	*infile;
 	char	*outfile;

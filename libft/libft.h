@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/02 11:45:35 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/28 14:20:21 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/29 10:29:47 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	ft_lstdelone(t_list *lst, void (*del)(void*));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstlast(t_list *lst);
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
-t_list	*ft_lstnew(char *content);
+t_list	*ft_lstnew(char *content, int num);
 int		ft_lstsize(t_list *lst);
 
 // Mem
