@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 13:18:08 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 11:18:28 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/29 12:15:51 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,23 +43,66 @@ void	creat_tab(t_pipex *pip)
 	}
 }
 
+int	cmp_here(char *str_to_cmp, char *str_model)
+{
+	int	i;
+
+	i = 0;
+	while (str_to_cmp[i] && str_model[i] && str_to_cmp[i] == str_model[i])
+		i++;
+	if ((str_to_cmp[i] == '\0' && str_model[i] == '\0')
+		|| (str_to_cmp[i] == '\n' && str_model[i] == '\0'))
+		return (1);
+	return (0);
+	
+}
+
+int	here_doc(t_pipex *pip, char *limiter)
+{
+	char	*mem;
+	int		fd;
+
+	pip->if_here_doc = 1;
+	pip->limiter = limiter;
+	pip->infile = TMP_FILE;
+	fd = open(TMP_FILE, O_WRONLY | O_TRUNC | O_CREAT, 0777);
+	ft_putstr_fd("here_doc > ", 1);
+	mem = get_next_line(0, 1);
+	while (!cmp_here(mem, pip->limiter))
+	{
+		ft_putstr_fd("here_doc > ", 1);
+		ft_putstr_fd(mem, fd);
+		free(mem);
+		mem = get_next_line(0, 1);
+	}
+	get_next_line(0, 0);
+	free(mem);
+	close(fd);
+	return (0);
+}
+
 int	main(int ac, char **av, char **env)
 {
-	t_pipex	pipex_mem;
+	t_pipex	pip;
 	int		i;
 
 	if (ac < 5)
 		exit(msg_error("Error : ./pipex needs at least 5 arguments"));
-	pipex_mem.cmd = NULL;
-	pipex_mem.infile = av[1];
-	pipex_mem.outfile = av[ac - 1];
-	pipex_mem.nb_cmd = ac - 3;
-	pipex_mem.all_path = get_path(env);
+	else if (cmp_here(av[1], "here_doc") && ac < 6)
+		exit(msg_error("Error : ./pipex here_doc needs at least 6 arguments"));
+	pip.if_here_doc = 0;
+	pip.infile = av[1];
+	if (cmp_here(av[1], "here_doc") && access(av[1], F_OK) == -1)
+		here_doc(&pip, av[2]);
+	pip.cmd = NULL;
+	pip.outfile = av[ac - 1];
+	pip.nb_cmd = ac - (3 + pip.if_here_doc);
+	pip.all_path = get_path(env);
 	i = -1;
-	while (++i < pipex_mem.nb_cmd)
-		ft_lstadd_back(&pipex_mem.cmd, ft_lstnew(av[i + 2], i));
-	creat_tab(&pipex_mem);
-	pipex(&pipex_mem);
-	free_all(&pipex_mem, "");
+	while (++i < pip.nb_cmd)
+		ft_lstadd_back(&pip.cmd, ft_lstnew(av[i + 2 + pip.if_here_doc], i));
+	creat_tab(&pip);
+	pipex(&pip);
+	//free_all(&pip, "");
 	return (0);
 }

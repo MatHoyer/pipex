@@ -6,11 +6,28 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 13:27:14 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 11:12:33 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/29 12:32:21 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+int	last_open(t_pipex *pip, int fd_pipe[2])
+{
+	int	outfile;
+
+	if (pip->if_here_doc)
+		outfile = open(pip->outfile, O_WRONLY | O_APPEND);
+	else
+		outfile = open(pip->outfile, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+	if (outfile == -1)
+	{
+		close(fd_pipe[0]);
+		close(fd_pipe[1]);
+		free_all(pip, "Error : No outfile");
+	}
+	return (outfile);
+}
 
 void	first(t_pipex *pip, int fd_pipe[2])
 {
@@ -45,13 +62,7 @@ void	last(t_pipex *pip, int fd_pipe[2])
 {
 	int	outfile;
 
-	outfile = open(pip->outfile, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-	if (outfile == -1)
-	{
-		close(fd_pipe[0]);
-		close(fd_pipe[1]);
-		free_all(pip, "Error : No outfile");
-	}
+	outfile = last_open(pip, fd_pipe);
 	dup2(fd_pipe[0], 0);
 	close(fd_pipe[1]);
 	close(fd_pipe[0]);
@@ -76,6 +87,8 @@ void	one_more(t_pipex *pip, int fd_prec[2], int fd_pipe[2])
 	close(fd_prec[1]);
 	dup2(fd_pipe[1], 1);
 	close(fd_pipe[0]);
+	close(fd_prec[0]);
+	close(fd_pipe[1]);
 	if (!pip->cmd->content || pip->cmd->content[0] == '\0')
 		free_all(pip, "Error : Cmd not found");
 	pip->cmd->split = ft_split(pip->cmd->content, ' ');
@@ -104,6 +117,7 @@ void	pipex(t_pipex *pip)
 			pip->pid[i] = fork();
 			if (pip->pid[i] == 0)
 				first(pip, pip->fd_pipe[i]);
+			close(pip->fd_pipe[i][1]);
 		}
 		else if (i == pip->nb_cmd - 1)
 		{
@@ -117,6 +131,8 @@ void	pipex(t_pipex *pip)
 			pip->pid[i] = fork();
 			if (pip->pid[i] == 0)
 				one_more(pip, pip->fd_pipe[i - 1], pip->fd_pipe[i]);
+			close(pip->fd_pipe[i - 1][0]);
+			close(pip->fd_pipe[i][1]);
 		}
 		pip->cmd = pip->cmd->next;
 	}

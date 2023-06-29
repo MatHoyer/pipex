@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/08 10:51:12 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 10:22:26 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/29 11:21:30 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct pipex
 	char	*infile;
 	char	*outfile;
 	int		if_here_doc;
+	char	*limiter;
 	int		nb_cmd;
 }	t_pipex;
 
@@ -41,6 +42,7 @@ void	free_mat(char **mat);
 
 void	wait_all(t_pipex *pip);
 
+int		cmp_str(char *str_to_cmp, char *str_model);
 char	*get_cmd(t_pipex *pip);
 void	pipex(t_pipex *pip);
 char	**get_path(char **env);
