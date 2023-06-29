@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 13:18:08 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 10:53:53 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/29 11:18:28 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	wait_all(t_pipex *pip)
 	i = 0;
 	while (i < pip->nb_cmd)
 	{
-		wait(NULL);
+		wait(pip->pid);
 		i++;
 	}
 }
