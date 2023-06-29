@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/08 10:51:12 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 08:33:22 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/29 10:20:04 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void	free_mat(char **mat);
 
 void	wait_all(t_pipex *pip);
 
+char	*get_cmd(t_pipex *pip);
 void	pipex(t_pipex *pip);
 char	**get_path(char **env);
 

@@ -7,6 +7,7 @@ SRC_PATH = sources/
 OBJS_PATH = obj/
 
 SRC = free_all.c \
+	get_cmd.c \
 	get_path.c \
 	main.c \
 	msg_error.c \
