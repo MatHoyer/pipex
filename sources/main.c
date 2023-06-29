@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 13:18:08 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 12:15:51 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/29 13:31:15 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,30 @@ void	wait_all(t_pipex *pip)
 void	creat_tab(t_pipex *pip)
 {
 	int	i;
+	int	j;
 
 	i = -1;
 	pip->pid = malloc(sizeof(pid_t) * pip->nb_cmd);
 	if (!pip->pid)
-		free_all(pip, "Error : Bad alloc");
+		exit(msg_error("Error : Bad alloc"));
 	pip->fd_pipe = malloc(sizeof(int *) * pip->nb_cmd - 1);
 	if (!pip->fd_pipe)
-		free_all(pip, "Error : Bad alloc");
+	{
+		free(pip->pid);
+		exit(msg_error("Error : Bad alloc"));
+	}
 	while (++i < pip->nb_cmd - 1)
 	{
 		pip->fd_pipe[i] = malloc(sizeof(int) * 2);
 		if (!pip->fd_pipe[i])
-			free_all(pip, "Error : Bad alloc");
+		{
+			free(pip->pid);
+			j = -1;
+			while (++j < i)
+				free(pip->fd_pipe[j]);
+			free(pip->fd_pipe);
+			exit(msg_error("Error : Bad alloc"));
+		}
 	}
 }
 
@@ -66,11 +77,11 @@ int	here_doc(t_pipex *pip, char *limiter)
 	pip->limiter = limiter;
 	pip->infile = TMP_FILE;
 	fd = open(TMP_FILE, O_WRONLY | O_TRUNC | O_CREAT, 0777);
-	ft_putstr_fd("here_doc > ", 1);
+	ft_putstr_fd("here_doc> ", 1);
 	mem = get_next_line(0, 1);
 	while (!cmp_here(mem, pip->limiter))
 	{
-		ft_putstr_fd("here_doc > ", 1);
+		ft_putstr_fd("here_doc> ", 1);
 		ft_putstr_fd(mem, fd);
 		free(mem);
 		mem = get_next_line(0, 1);
@@ -103,6 +114,6 @@ int	main(int ac, char **av, char **env)
 		ft_lstadd_back(&pip.cmd, ft_lstnew(av[i + 2 + pip.if_here_doc], i));
 	creat_tab(&pip);
 	pipex(&pip);
-	//free_all(&pip, "");
+	free_all(&pip, "");
 	return (0);
 }
