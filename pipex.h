@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/08 10:51:12 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/28 18:31:36 by marvin           ###   ########.fr       */
+/*   Updated: 2023/06/29 08:33:22 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 typedef struct pipex
 {
 	t_list	*cmd;
+	t_list	*first_cmd;
 	char	**all_path;
 	char	*infile;
 	char	*outfile;
@@ -35,6 +36,8 @@ typedef struct pipex
 int		msg_error(char *str);
 void	free_all(t_pipex *pipe, char *msg);
 void	free_mat(char **mat);
+
+void	wait_all(t_pipex *pip);
 
 void	pipex(t_pipex *pip);
 char	**get_path(char **env);
