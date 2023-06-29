@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 14:21:35 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/28 15:13:01 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/29 10:17:48 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ int	cmp_str(char *str_to_cmp, char *str_model)
 	if (str_to_cmp[i] == str_model[i])
 		return (1);
 	return (0);
-	
 }
 
 int	str_len_mat(char **mat)
@@ -40,14 +39,14 @@ int	str_len_mat(char **mat)
 char	*find_path(char *str)
 {
 	char	cmp[6];
-	int	i;
+	int		i;
 
 	i = -1;
 	while (++ i < 5 && str[i])
 		cmp[i] = str[i];
 	cmp[i] = '\0';
 	if (cmp_str(cmp, "PATH="))
-			return (&str[i]);
+		return (&str[i]);
 	return (NULL);
 }
 
@@ -55,7 +54,7 @@ char	**put_slash(char **path)
 {
 	int		i;
 	char	**a_return;
-	
+
 	i = -1;
 	a_return = ft_calloc(sizeof(char *), (size_t)(str_len_mat(path) + 1));
 	if (!a_return)
