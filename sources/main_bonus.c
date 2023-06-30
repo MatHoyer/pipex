@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 08:27:22 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/30 09:44:59 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/30 10:14:00 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ int	main(int ac, char **av, char **env)
 		ft_lstadd_back(&pip.cmd, ft_lstnew(av[i + 2 + pip.if_here_doc], i));
 	pip.first_cmd = pip.cmd;
 	pipex(&pip);
+	unlink(TMP_FILE);
 	free_all(&pip, "");
 	return (0);
 }

@@ -1,9 +1,3 @@
-Makefile
-infile
-libft
-obj
-outfile
-pipex
-pipex.h
-pipex_bonus
-sources
+test^M$
+de^M$
+free_mat^M$
