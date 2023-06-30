@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 08:27:22 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/30 08:27:59 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/30 09:44:59 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ int	main(int ac, char **av, char **env)
 	if (cmp_here(av[1], "here_doc") && access(av[1], F_OK) == -1)
 		here_doc(&pip, av[2]);
 	pip.cmd = NULL;
+	pip.all_path = NULL;
 	pip.outfile = av[ac - 1];
 	pip.nb_cmd = ac - 3 - pip.if_here_doc;
 	creat_tab(&pip);

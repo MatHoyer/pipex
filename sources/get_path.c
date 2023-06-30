@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 14:21:35 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/30 08:05:44 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/30 09:48:43 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,6 @@ char	**get_path(t_pipex *pip, char **env)
 	}
 	path = ft_split(mem_path, ':');
 	if (!path)
-		free_all(pip, "Error : Bad alloc");
+		free_path(pip, "Error : Bad alloc");
 	return (put_slash(pip, path));
 }

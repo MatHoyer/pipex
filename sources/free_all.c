@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 13:59:10 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 21:53:34 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/30 09:46:55 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,19 @@ void	free_mat(char **mat)
 		i++;
 	}
 	free(mat);
+}
+
+void	free_path(t_pipex *pip, char *msg)
+{
+	int		i;
+
+	i = -1;
+	while (++i < pip->nb_cmd - 1)
+		free(pip->fd_pipe[i]);
+	free(pip->fd_pipe);
+	free(pip->pid);
+	if (msg[0])
+		exit(msg_error(msg));
 }
 
 void	free_all(t_pipex *pip, char *msg)

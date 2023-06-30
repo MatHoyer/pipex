@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 10:19:26 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/30 08:21:09 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/30 10:00:34 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,27 @@ char	*get_cmd_annexe(t_pipex *pip)
 	return (NULL);
 }
 
+int	check_slash(char *str)
+{
+	int	i;
+
+	i = -1;
+	while (str[++i])
+	{
+		if (str[i] != '/' && str[i] != '.')
+			return (0);
+	}
+	return (1);
+}
+
 char	*get_cmd(t_pipex *pip)
 {
 	char	*a_return;
 
-	if (pip->cmd->split[0][0] == '/')
+	if (pip->cmd->split[0][0] == '/' || pip->cmd->split[0][0] == '.')
 	{
-		if (access(pip->cmd->split[0], F_OK | X_OK) == -1)
+		if (access(pip->cmd->split[0], F_OK | X_OK) == -1
+			|| check_slash(pip->cmd->split[0]))
 		{
 			free_mat(pip->cmd->split);
 			free_all(pip, "Error : Cmd not found");
