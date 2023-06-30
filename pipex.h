@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/08 10:51:12 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 11:21:30 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/30 08:05:24 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,15 @@ void	free_mat(char **mat);
 
 void	wait_all(t_pipex *pip);
 
+void	one_more(t_pipex *pip, int fd_prec[2], int fd_pipe[2]);
+void	first(t_pipex *pip, int fd_pipe[2], int infile);
+
+void	do_first(t_pipex *pip, int i);
+void	do_one_more(t_pipex *pip, int i);
+
 int		cmp_str(char *str_to_cmp, char *str_model);
 char	*get_cmd(t_pipex *pip);
 void	pipex(t_pipex *pip);
-char	**get_path(char **env);
+char	**get_path(t_pipex *pip, char **env);
 
 #endif

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/28 13:18:08 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/30 08:28:33 by mhoyer           ###   ########.fr       */
+/*   Created: 2023/06/30 08:27:22 by mhoyer            #+#    #+#             */
+/*   Updated: 2023/06/30 08:27:59 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,10 @@ int	main(int ac, char **av, char **env)
 	t_pipex	pip;
 	int		i;
 
-	if (ac != 5)
-		exit(msg_error("Error : ./pipex without bonus needs 5 arguments"));
+	if (ac < 5)
+		exit(msg_error("Error : ./pipex needs at least 5 arguments"));
+	else if (cmp_here(av[1], "here_doc") && ac < 6)
+		exit(msg_error("Error : ./pipex here_doc needs at least 6 arguments"));
 	pip.if_here_doc = 0;
 	pip.infile = av[1];
 	if (cmp_here(av[1], "here_doc") && access(av[1], F_OK) == -1)
@@ -109,3 +111,4 @@ int	main(int ac, char **av, char **env)
 	free_all(&pip, "");
 	return (0);
 }
+

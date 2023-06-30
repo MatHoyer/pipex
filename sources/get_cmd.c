@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 10:19:26 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 10:19:54 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/30 08:21:09 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ void	dup_cmp(t_pipex *pip)
 	while (pip->cmd->split[0][i] != '/')
 		i--;
 	tmp = malloc(ft_strlen(pip->cmd->split[0]) - i);
+	if (!tmp)
+		free_all(pip, "Error : Bad alloc");
 	i++;
 	while (pip->cmd->split[0][i])
 	{
@@ -35,20 +37,12 @@ void	dup_cmp(t_pipex *pip)
 	pip->cmd->split[0] = tmp;
 }
 
-char	*get_cmd(t_pipex *pip)
+char	*get_cmd_annexe(t_pipex *pip)
 {
 	char	*a_return;
 	int		i;
 
 	i = -1;
-	if (pip->cmd->split[0][0] == '/')
-	{
-		if (access(pip->cmd->split[0], F_OK | X_OK) == -1)
-			free_all(pip, "Error : Cmd not found");
-		a_return = ft_strdup(pip->cmd->split[0]);
-		dup_cmp(pip);
-		return (a_return);
-	}
 	while (pip->all_path && pip->all_path[++i])
 	{
 		a_return = ft_strjoin(pip->all_path[i], pip->cmd->split[0]);
@@ -57,4 +51,24 @@ char	*get_cmd(t_pipex *pip)
 		free(a_return);
 	}
 	return (NULL);
+}
+
+char	*get_cmd(t_pipex *pip)
+{
+	char	*a_return;
+
+	if (pip->cmd->split[0][0] == '/')
+	{
+		if (access(pip->cmd->split[0], F_OK | X_OK) == -1)
+		{
+			free_mat(pip->cmd->split);
+			free_all(pip, "Error : Cmd not found");
+		}
+		a_return = ft_strdup(pip->cmd->split[0]);
+		if (!a_return)
+			free_all(pip, "Error : Bad alloc");
+		dup_cmp(pip);
+		return (a_return);
+	}
+	return (get_cmd_annexe(pip));
 }

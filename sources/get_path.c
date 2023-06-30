@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 14:21:35 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/29 11:30:06 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/06/30 08:05:44 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ char	*find_path(char *str)
 	return (NULL);
 }
 
-char	**put_slash(char **path)
+char	**put_slash(t_pipex *pip, char **path)
 {
 	int		i;
 	char	**a_return;
@@ -62,6 +62,8 @@ char	**put_slash(char **path)
 	while (path[++i])
 	{
 		a_return[i] = ft_strjoin(path[i], "/");
+		if (!a_return[i])
+			free_all(pip, "Error : Bad alloc");
 		free(path[i]);
 	}
 	a_return[i] = NULL;
@@ -69,7 +71,7 @@ char	**put_slash(char **path)
 	return (a_return);
 }
 
-char	**get_path(char **env)
+char	**get_path(t_pipex *pip, char **env)
 {
 	char	**path;
 	int		i;
@@ -86,5 +88,7 @@ char	**get_path(char **env)
 		mem_path = find_path(env[i]);
 	}
 	path = ft_split(mem_path, ':');
-	return (put_slash(path));
+	if (!path)
+		free_all(pip, "Error : Bad alloc");
+	return (put_slash(pip, path));
 }
