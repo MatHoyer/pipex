@@ -6,7 +6,7 @@
 /*   By: mhoyer <mhoyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 13:27:14 by mhoyer            #+#    #+#             */
-/*   Updated: 2023/06/30 08:23:33 by mhoyer           ###   ########.fr       */
+/*   Updated: 2023/07/03 08:16:20 by mhoyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,8 @@ void	pipex(t_pipex *pip)
 		{
 			file = last_open(pip, pip->fd_pipe[i - 1]);
 			pip->pid[i] = fork();
+			if (pip->pid[i] == -1)
+				free_all(pip, "Error : Bad alloc");
 			if (pip->pid[i] == 0)
 				last(pip, pip->fd_pipe[i - 1], file);
 			close(pip->fd_pipe[i - 1][0]);
